@@ -33,6 +33,7 @@ function showWebcam () {
     const sliderBrightness = document.querySelector('#sliderBrightness');
     const sliderContrast = document.querySelector('#sliderContrast');
     const checkboxClamp = document.querySelector('#checkboxClamp');
+    const checkboxFilters = document.querySelector('#checkboxFilters');
 
     navigator.mediaDevices.getUserMedia({audio: false, video: true})
         .then(function(stream) {
@@ -47,7 +48,11 @@ function showWebcam () {
         });
         
         const interval = () => {
-            ctx.filter = `brightness(${sliderBrightness.value}%) contrast(${sliderContrast.value}%) grayscale(${checkboxClamp.checked ? 1 : 0})`;
+            if(checkboxFilters.checked) {
+                ctx.filter = `brightness(${sliderBrightness.value}%) contrast(${sliderContrast.value}%) grayscale(${checkboxClamp.checked ? 1 : 0})`;
+            } else {
+                ctx.filter = 'none';
+            }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
             const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
