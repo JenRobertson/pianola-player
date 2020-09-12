@@ -21,12 +21,12 @@ io.on('connection', (socket) => {
 });
 
 const forwards = () => {
-    Motor0.writeSync (0);
+    Motor0.writeSync (1);
     Motor1.writeSync (0);
 };
 
 const reverse = () => {
-    Motor0.writeSync (1);
+    Motor0.writeSync (0);
     Motor1.writeSync (0);
 };
 
@@ -36,9 +36,8 @@ const stop = () => {
 };
 
 process.on('SIGINT', function () { //on ctrl+c
-    Motor0.writeSync(0); // Turn LED off
+    Motor0.writeSync(0);
     Motor0.unexport(); // Unexport LED GPIO to free resources
-    // pushButton.unexport(); // Unexport Button GPIO to free resources
     process.exit(); //exit completely
 });
   
