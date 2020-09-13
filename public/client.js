@@ -1,24 +1,15 @@
 let ctx, captureArea, sampler;
 window.addEventListener('load', () => {
-    setUpButtons();
-    showWebcam();
+    setUpMotor();
     captureArea = new CaptureArea({startX: 10, endX: 630});
-    const pianoButton = document.getElementById('piano');
     sampler = new Tone.Sampler({
         urls: getUrls(),
         baseUrl: "audio/piano/",
         release: 0.5,
         onload: () => {
-            
+            showWebcam();
         }
     }).toDestination();
-    
-    pianoButton.onclick = () => {
-        captureArea.segments[40].startNote();
-        window.setTimeout(() => {
-            captureArea.segments[40].stopNote();
-        }, 100)
-    }
 });
 
 
@@ -70,7 +61,7 @@ function showWebcam() {
     }
 }
 
-function setUpButtons() {
+function setUpMotor() {
     const socket = io('http://localhost:3000');
     
     const forwardsButton = document.getElementById('forwards');
