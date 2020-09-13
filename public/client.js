@@ -1,10 +1,10 @@
-let ctx, captureArea;
+let ctx, captureArea, sampler;
 window.addEventListener('load', () => {
     setUpButtons();
     showWebcam();
     captureArea = createCaptureArea(10, 630); // start end
     const pianoButton = document.getElementById('piano');
-    const sampler = new Tone.Sampler({
+    sampler = new Tone.Sampler({
         urls: getUrls(),
         baseUrl: "audio/piano/",
         release: 0.5,
@@ -14,9 +14,9 @@ window.addEventListener('load', () => {
     }).toDestination();
     
     pianoButton.onclick = () => {
-        sampler.triggerAttack("C3");
+        captureArea.segments[40].startNote();
         window.setTimeout(() => {
-            sampler.triggerRelease("C3");
+            captureArea.segments[40].stopNote();
         }, 100)
     }
 });
@@ -109,21 +109,56 @@ function createCaptureArea(startX, endX) {
     const width = endX - startX;
     const segmentWidth = width / 88;
     let currentX = startX;
-    for (let i = 0; i < 88; i++) {
-        captureArea.segments.push({
+    for (let i = 1; i < 89; i++) {
+        captureArea.segments.push(new Segment({
+            keyNumber: i,
+            frequency: getFrequencyFromPianoNumber(i),
             x: currentX, 
-            y: 20, 
             width: segmentWidth,
-            height: 4
-        })
+        }));
         currentX += segmentWidth;
     };
     return captureArea;
 }
 
+class Segment {
+    constructor({keyNumber, frequency, x, width}) {
+      this.keyNumber = keyNumber;
+      this.frequency = frequency;
+      this.x = x;
+      this.y = 20;
+      this.width = width;
+      this.height = 4;
+
+      this.playing = false;
+    }
+    startNote () {
+        sampler.triggerAttack(this.frequency);
+        this.playing = true;
+    }
+    stopNote () {
+        sampler.triggerRelease(this.frequency);
+        this.playing = false;
+    }
+    check () {
+        if (this.isBlack() !== this.playing) { // state has changed
+            isBlack ? this.startNote() : this.stopNote();
+        }
+    }
+    isBlack() {
+        return true;
+    }
+  }
+
+function getFrequencyFromPianoNumber(note) {
+    // +20 to convert from midi to piano note
+    console.log(440 * Math.pow(2,(note-69 +20)/12));
+    return (440 * Math.pow(2,(note-69 +20)/12)) ;
+} 
+
 function getUrls() {
     return {
-        A0: "A1.mp3",
+        A0: "A0.mp3",
         A1: "A1.mp3",
         A2: "A2.mp3",
         A3: "A3.mp3",
@@ -131,7 +166,7 @@ function getUrls() {
         A5: "A5.mp3",
         A6: "A6.mp3",
         
-        'A#0': "As1.mp3",
+        'A#0': "As0.mp3",
         'A#1': "As1.mp3",
         'A#2': "As2.mp3",
         'A#3': "As3.mp3",
@@ -139,7 +174,7 @@ function getUrls() {
         'A#5': "As5.mp3",
         'A#6': "As6.mp3",
         
-        B0: "B1.mp3",
+        B0: "B0.mp3",
         B1: "B1.mp3",
         B2: "B2.mp3",
         B3: "B3.mp3",
@@ -147,7 +182,7 @@ function getUrls() {
         B5: "B5.mp3",
         B6: "B6.mp3",
         
-        C0: "C1.mp3",
+        C0: "C0.mp3",
         C1: "C1.mp3",
         C2: "C2.mp3",
         C3: "C3.mp3",
@@ -155,7 +190,7 @@ function getUrls() {
         C5: "C5.mp3",
         C6: "C6.mp3",
         
-        'C#0': "Cs1.mp3",
+        'C#0': "Cs0.mp3",
         'C#1': "Cs1.mp3",
         'C#2': "Cs2.mp3",
         'C#3': "Cs3.mp3",
@@ -163,7 +198,7 @@ function getUrls() {
         'C#5': "Cs5.mp3",
         'C#6': "Cs6.mp3",
         
-        D0: "D1.mp3",
+        D0: "D0.mp3",
         D1: "D1.mp3",
         D2: "D2.mp3",
         D3: "D3.mp3",
@@ -171,7 +206,7 @@ function getUrls() {
         D5: "D5.mp3",
         D6: "D6.mp3",
         
-        'D#0': "Ds1.mp3",
+        'D#0': "Ds0.mp3",
         'D#1': "Ds1.mp3",
         'D#2': "Ds2.mp3",
         'D#3': "Ds3.mp3",
@@ -179,7 +214,7 @@ function getUrls() {
         'D#5': "Ds5.mp3",
         'D#6': "Ds6.mp3",
         
-        E0: "E1.mp3",
+        E0: "E0.mp3",
         E1: "E1.mp3",
         E2: "E2.mp3",
         E3: "E3.mp3",
@@ -187,7 +222,7 @@ function getUrls() {
         E5: "E5.mp3",
         E6: "E6.mp3",
         
-        F0: "F1.mp3",
+        F0: "F0.mp3",
         F1: "F1.mp3",
         F2: "F2.mp3",
         F3: "F3.mp3",
@@ -195,7 +230,7 @@ function getUrls() {
         F5: "F5.mp3",
         F6: "F6.mp3",
         
-        'F#0': "Fs1.mp3",
+        'F#0': "Fs0.mp3",
         'F#1': "Fs1.mp3",
         'F#2': "Fs2.mp3",
         'F#3': "Fs3.mp3",
@@ -203,7 +238,7 @@ function getUrls() {
         'F#5': "Fs5.mp3",
         'F#6': "Fs6.mp3",
         
-        G0: "G1.mp3",
+        G0: "G0.mp3",
         G1: "G1.mp3",
         G2: "G2.mp3",
         G3: "G3.mp3",
@@ -211,7 +246,7 @@ function getUrls() {
         G5: "G5.mp3",
         G6: "G6.mp3",
         
-        'G#0': "Gs1.mp3",
+        'G#0': "Gs0.mp3",
         'G#1': "Gs1.mp3",
         'G#2': "Gs2.mp3",
         'G#3': "Gs3.mp3",
