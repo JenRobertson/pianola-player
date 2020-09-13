@@ -65,8 +65,8 @@ function showWebcam() {
         }
         
         ctx.putImageData(pixels, 0, 0);
-        captureArea.checkSegments();
         captureArea.draw();
+        if (checkboxSound.checked) captureArea.checkSegments();
     }
 }
 
