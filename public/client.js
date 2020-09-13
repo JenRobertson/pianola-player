@@ -2,7 +2,7 @@ let ctx, captureArea, sampler;
 window.addEventListener('load', () => {
     setUpButtons();
     showWebcam();
-    captureArea = createCaptureArea(10, 630); // start end
+    captureArea = new CaptureArea({startX: 10, endX: 630});
     const pianoButton = document.getElementById('piano');
     sampler = new Tone.Sampler({
         urls: getUrls(),
@@ -21,16 +21,6 @@ window.addEventListener('load', () => {
     }
 });
 
-function drawSegments() {
-    ctx.beginPath();
-    for (let i = 0; i < captureArea.segments.length; i++) {
-        const segment = captureArea.segments[i];
-        ctx.rect(segment.x, segment.y, segment.width, segment.height);
-    }
-    // x y width height
-    ctx.closePath();
-    ctx.stroke();
-}
 
 function showWebcam() {
     const video = document.querySelector('video');
@@ -75,7 +65,8 @@ function showWebcam() {
         }
         
         ctx.putImageData(pixels, 0, 0);
-        drawSegments();
+        captureArea.checkSegments();
+        captureArea.draw();
     }
 }
 
@@ -99,38 +90,54 @@ function setUpButtons() {
     }
 }
 
-
-function createCaptureArea(startX, endX) {
-    const captureArea ={
-        start: startX,
-        endX: endX,
-        segments: []
-    };
-    const width = endX - startX;
-    const segmentWidth = width / 88;
-    let currentX = startX;
-    for (let i = 1; i < 89; i++) {
-        captureArea.segments.push(new Segment({
-            keyNumber: i,
-            frequency: getFrequencyFromPianoNumber(i),
-            x: currentX, 
-            width: segmentWidth,
-        }));
-        currentX += segmentWidth;
-    };
-    return captureArea;
+class CaptureArea {
+    constructor({startX, endX}) {
+        this.startX = startX;
+        this.endX = endX;
+        this.width = endX - startX;
+        this.segmentWidth = this.width / 88;
+        this.segments= [];
+        this.createSegments();
+    }
+    createSegments() {
+        let currentX = this.startX;
+        for (let i = 1; i <= 88; i++) {
+            this.segments.push(new Segment({
+                keyNumber: i,
+                frequency: getFrequencyFromPianoNumber(i),
+                x: currentX, 
+                width: this.segmentWidth,
+            }));
+            currentX += this.segmentWidth;
+        };
+    }
+    checkSegments() {
+        for (let i = 0; i < this.segments.length; i++) {
+            this.segments[i].check();
+        }
+    }
+    draw() {
+        ctx.beginPath();
+        for (let i = 0; i < this.segments.length; i++) {
+            const segment = this.segments[i];
+            ctx.rect(segment.x, segment.y, segment.width, segment.height);
+        }
+        // x y width height
+        ctx.closePath();
+        ctx.stroke();
+    }
 }
 
 class Segment {
     constructor({keyNumber, frequency, x, width}) {
-      this.keyNumber = keyNumber;
-      this.frequency = frequency;
-      this.x = x;
-      this.y = 20;
-      this.width = width;
-      this.height = 4;
+        this.keyNumber = keyNumber;
+        this.frequency = frequency;
+        this.x = x;
+        this.y = 20;
+        this.width = width;
+        this.height = 4;
 
-      this.playing = false;
+        this.playing = false;
     }
     startNote () {
         sampler.triggerAttack(this.frequency);
@@ -142,17 +149,21 @@ class Segment {
     }
     check () {
         if (this.isBlack() !== this.playing) { // state has changed
-            isBlack ? this.startNote() : this.stopNote();
+            this.isBlack() ? this.startNote() : this.stopNote();
         }
     }
     isBlack() {
-        return true;
+        const pixels = ctx.getImageData(this.x, this.y, this.width, this.height).data;
+        let blackPixelCount = 0;
+        for (let i = 0; i < pixels.length; i++) {
+            if (pixels[i] === 0) blackPixelCount++;
+        }
+        return blackPixelCount > 16;
     }
   }
 
 function getFrequencyFromPianoNumber(note) {
     // +20 to convert from midi to piano note
-    console.log(440 * Math.pow(2,(note-69 +20)/12));
     return (440 * Math.pow(2,(note-69 +20)/12)) ;
 } 
 
