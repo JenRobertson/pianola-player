@@ -1,6 +1,8 @@
+let ctx, captureArea;
 window.addEventListener('load', () => {
     setUpButtons();
     showWebcam();
+    captureArea = createCaptureArea(10, 630); // start end
     const pianoButton = document.getElementById('piano');
     const sampler = new Tone.Sampler({
         urls: getUrls(),
@@ -12,17 +14,28 @@ window.addEventListener('load', () => {
     }).toDestination();
     
     pianoButton.onclick = () => {
-        sampler.triggerAttack("F1");
+        sampler.triggerAttack("C3");
         window.setTimeout(() => {
-            sampler.triggerRelease("F1");
+            sampler.triggerRelease("C3");
         }, 100)
     }
 });
 
+function drawSegments() {
+    ctx.beginPath();
+    for (let i = 0; i < captureArea.segments.length; i++) {
+        const segment = captureArea.segments[i];
+        ctx.rect(segment.x, segment.y, segment.width, segment.height);
+    }
+    // x y width height
+    ctx.closePath();
+    ctx.stroke();
+}
+
 function showWebcam() {
     const video = document.querySelector('video');
     const canvas = document.querySelector('canvas');
-    const ctx = canvas.getContext('2d');
+    ctx = canvas.getContext('2d');
     const sliderClamp = document.querySelector('#sliderClamp');
     const sliderBrightness = document.querySelector('#sliderBrightness');
     const sliderContrast = document.querySelector('#sliderContrast');
@@ -62,6 +75,7 @@ function showWebcam() {
         }
         
         ctx.putImageData(pixels, 0, 0);
+        drawSegments();
     }
 }
 
@@ -85,26 +99,27 @@ function setUpButtons() {
     }
 }
 
-// webcam functions
 
-// function getPixelsFromArea(ctx, sx, sy, sw, sh){
-//     return getEveryNth(ctx.getImageData(sx,sy,sw,sh).data); 
-// }
-
-// function getAverageBrightnessOfArea(ctx, sx, sy, sw, sh){
-//     return average(getPixelsFromArea(ctx, sx, sy, sw, sh));
-// }
-
-// function average(nums) {
-//     return nums.reduce((a, b) => (a + b)) / nums.length;
-// }
-
-// function getEveryNth(array){
-//     console.log('array', array);
-//     return array.filter(function(value, index, Arr) {
-//         return index % 4 == 0;
-//     });
-// }
+function createCaptureArea(startX, endX) {
+    const captureArea ={
+        start: startX,
+        endX: endX,
+        segments: []
+    };
+    const width = endX - startX;
+    const segmentWidth = width / 88;
+    let currentX = startX;
+    for (let i = 0; i < 88; i++) {
+        captureArea.segments.push({
+            x: currentX, 
+            y: 20, 
+            width: segmentWidth,
+            height: 4
+        })
+        currentX += segmentWidth;
+    };
+    return captureArea;
+}
 
 function getUrls() {
     return {

@@ -1,6 +1,6 @@
-h1 {
+/* h1 {
     color: blue;
-}
+} */
 
 video {
     display: none;
@@ -8,4 +8,8 @@ video {
 
 canvas {
     display: block;
+}
+
+body {
+    background-color: #c7a3af;
 }
