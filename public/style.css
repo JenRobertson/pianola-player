@@ -13,3 +13,11 @@ canvas {
 body {
     background-color: #c7a3af;
 }
+
+#divMotor {
+    background-color: grey;
+}
+
+#divFilters {
+    background-color: green;
+}

@@ -7,20 +7,36 @@
   </head>
   <body>
     <h1>Pianola Player</h1>
-    <button id="forwards">Forwards</button>
-    <button id="reverse">Reverse</button>
-    <button id="stop">Stop</button>
-
-    <button id='piano'>Ding</button>
-    Sound:<input type="checkbox" id="checkboxSound">
 
     <video playsinline autoplay></video>
     <canvas></canvas>
-    Threshold:<input type="number" min="0" max="255" value="180" id="sliderClamp">
-    Brightness:<input type="number" min="-500" max="500" value="300" id="sliderBrightness">
-    Contrast:<input type="number" min="0" max="1000" value="100" id="sliderContrast">
-    Block colours:<input type="checkbox" id="checkboxClamp" checked>
-    Enable filters:<input type="checkbox" id="checkboxFilters" checked>
+
+    <div id="Capture area controls">
+      Left:<input type="number" min="0" max="640" value="10" id="sliderLeft">
+      Right:<input type="number" min="0" max="640" value="630" id="sliderRight">
+      Y:<input type="number" min="0" max="480" value="100" id="sliderY">
+      <button id='buttonAddCaptureArea'>Add capture area</button>
+    </div>
+
+    <div id="divFilters">
+      <h2>Filter controls</h2>
+      Threshold:<input type="number" min="0" max="255" value="180" id="sliderClamp">
+      Brightness:<input type="number" min="-500" max="500" value="300" id="sliderBrightness">
+      Contrast:<input type="number" min="0" max="1000" value="100" id="sliderContrast">
+      Block colours:<input type="checkbox" id="checkboxClamp" checked>
+      Enable filters:<input type="checkbox" id="checkboxFilters" checked>
+    </div>
+
+    <div id="divMotor">
+      <h2>Motor controls</h2>
+      <button id="forwards">Forwards</button>
+      <button id="reverse">Reverse</button>
+      <button id="stop">Stop</button>
+
+      <button id='piano'>Ding</button>
+      Sound:<input type="checkbox" id="checkboxSound">
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.52/Tone.js"></script>
     <script type="module" src="client.js"></script>

@@ -1,7 +1,9 @@
 let ctx, captureArea, sampler;
 window.addEventListener('load', () => {
     setUpMotor();
-    captureArea = new CaptureArea({startX: 10, endX: 630});
+    buttonAddCaptureArea.onclick = () => {
+        captureArea = new CaptureArea({startX: parseInt(sliderLeft.value), endX: parseInt(sliderRight.value)});
+    }
     sampler = new Tone.Sampler({
         urls: getUrls(),
         baseUrl: "audio/piano/",
@@ -56,8 +58,10 @@ function showWebcam() {
         }
         
         ctx.putImageData(pixels, 0, 0);
-        captureArea.draw();
-        if (checkboxSound.checked) captureArea.checkSegments();
+        if(captureArea) {
+            captureArea.draw();
+            if (checkboxSound.checked) captureArea.checkSegments();
+        }
     }
 }
 
@@ -83,6 +87,7 @@ function setUpMotor() {
 
 class CaptureArea {
     constructor({startX, endX}) {
+        console.log(startX, endX)
         this.startX = startX;
         this.endX = endX;
         this.width = endX - startX;
