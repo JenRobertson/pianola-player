@@ -2,7 +2,7 @@ let ctx, captureArea, sampler;
 window.addEventListener('load', () => {
     setUpMotor();
     buttonAddCaptureArea.onclick = () => {
-        captureArea = new CaptureArea({startX: parseInt(sliderLeft.value), endX: parseInt(sliderRight.value)});
+        captureArea = new CaptureArea({startX: parseInt(sliderLeft.value), endX: parseInt(sliderRight.value), y: sliderY.value});
     }
     sampler = new Tone.Sampler({
         urls: getUrls(),
@@ -86,11 +86,11 @@ function setUpMotor() {
 }
 
 class CaptureArea {
-    constructor({startX, endX}) {
-        console.log(startX, endX)
+    constructor({startX, endX, y}) {
         this.startX = startX;
         this.endX = endX;
         this.width = endX - startX;
+        this.y = y;
         this.segmentWidth = this.width / 88;
         this.segments= [];
         this.createSegments();
@@ -103,6 +103,7 @@ class CaptureArea {
                 frequency: getFrequencyFromPianoNumber(i),
                 x: currentX, 
                 width: this.segmentWidth,
+                y: this.y
             }));
             currentX += this.segmentWidth;
         };
@@ -125,11 +126,11 @@ class CaptureArea {
 }
 
 class Segment {
-    constructor({keyNumber, frequency, x, width}) {
+    constructor({keyNumber, frequency, x, y, width}) {
         this.keyNumber = keyNumber;
         this.frequency = frequency;
         this.x = x;
-        this.y = 20;
+        this.y = y;
         this.width = width;
         this.height = 4;
 
