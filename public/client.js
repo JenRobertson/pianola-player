@@ -2,7 +2,7 @@ let ctx, captureArea, sampler;
 window.addEventListener('load', () => {
     setUpMotor();
     buttonAddCaptureArea.onclick = () => {
-        captureArea = new CaptureArea({startX: parseInt(sliderLeft.value), endX: parseInt(sliderRight.value), y: sliderY.value});
+        captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: sliderY.value});
     }
     sampler = new Tone.Sampler({
         urls: getUrls(),
@@ -86,26 +86,22 @@ function setUpMotor() {
 }
 
 class CaptureArea {
-    constructor({startX, endX, y}) {
-        this.startX = startX;
-        this.endX = endX;
-        this.width = endX - startX;
+    constructor({calibrationNumbers, y}) {
+        this.calibrationNumbers = calibrationNumbers.split(' ');
+        if(this.calibrationNumbers.length < 89) alert('Please enter 89 numbers (one extra for with of 88th)');
         this.y = y;
-        this.segmentWidth = this.width / 88;
         this.segments= [];
         this.createSegments();
     }
     createSegments() {
-        let currentX = this.startX;
         for (let i = 1; i <= 88; i++) {
             this.segments.push(new Segment({
                 keyNumber: i,
                 frequency: getFrequencyFromPianoNumber(i),
-                x: currentX, 
-                width: this.segmentWidth,
+                x: this.calibrationNumbers[i], 
+                width: this.calibrationNumbers[i + 1] - this.calibrationNumbers[i],
                 y: this.y
             }));
-            currentX += this.segmentWidth;
         };
     }
     checkSegments() {
