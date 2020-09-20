@@ -21,3 +21,8 @@ body {
 #divFilters {
     background-color: green;
 }
+
+textArea {
+    top: 300px;
+    position: fixed;
+}
