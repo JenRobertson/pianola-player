@@ -1,4 +1,8 @@
 let ctx, captureArea, sampler;
+const INTERVAL = 5;
+const MIN_BLACK_PIXEL_COUNT = 4;
+const HEIGHT_OF_CAPTURE_AREA = 1;
+
 window.addEventListener('load', () => {
     setUpMotor();
     buttonAddCaptureArea.onclick = () => {
@@ -30,7 +34,7 @@ function showWebcam() {
         video.srcObject = stream;
         canvas.width = 640;
         canvas.height = 480;
-        setInterval(interval, 30);
+        setInterval(interval, INTERVAL);
         
     })
     .catch(function (err) {
@@ -49,7 +53,7 @@ function showWebcam() {
         if (checkboxClamp.checked) {
             if(!captureArea) return;
             const starti = (640 * 4) * captureArea.y;
-            const endi = starti + (640 * 4 * 4);
+            const endi = starti + (640 * 4 * HEIGHT_OF_CAPTURE_AREA);
 
             for (let i = starti; i < endi; i++) {
                 let element = pixels.data[i];
@@ -159,7 +163,7 @@ class Segment {
         for (let i = 0; i < pixels.length; i++) {
             if (pixels[i] === 0) blackPixelCount++;
         }
-        return blackPixelCount > 4;
+        return blackPixelCount > MIN_BLACK_PIXEL_COUNT;
     }
   }
 
