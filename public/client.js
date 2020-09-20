@@ -117,6 +117,8 @@ class CaptureArea {
         ctx.beginPath();
         for (let i = 0; i < this.segments.length; i++) {
             const segment = this.segments[i];
+            ctx.strokeStyle = "#FF0000";
+            ctx.lineWidth = 0.5;
             ctx.rect(segment.x, segment.y, segment.width, segment.height);
         }
         // x y width height
