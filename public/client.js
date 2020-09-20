@@ -47,7 +47,11 @@ function showWebcam() {
         
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         if (checkboxClamp.checked) {
-            for (let i = 0; i < pixels.data.length; i++) {
+            if(!captureArea) return;
+            const starti = (640 * 4) * captureArea.y;
+            const endi = starti + (640 * 4 * 4);
+
+            for (let i = starti; i < endi; i++) {
                 let element = pixels.data[i];
                 if (element < sliderClamp.value) {
                     pixels.data[i] = 0;
@@ -92,6 +96,10 @@ class CaptureArea {
         this.y = y;
         this.segments= [];
         this.createSegments();
+        ctx.strokeStyle = "#FF0000";
+        ctx.lineWidth = 0.5;
+        this.x = this.segments[0];
+        this.endX = this.segments[88];
     }
     createSegments() {
         for (let i = 0; i < 88; i++) {
@@ -113,8 +121,6 @@ class CaptureArea {
         ctx.beginPath();
         for (let i = 0; i < this.segments.length; i++) {
             const segment = this.segments[i];
-            ctx.strokeStyle = "#FF0000";
-            ctx.lineWidth = 0.5;
             ctx.rect(segment.x, segment.y, segment.width, segment.height);
         }
         // x y width height
