@@ -159,7 +159,7 @@ class Segment {
         for (let i = 0; i < pixels.length; i++) {
             if (pixels[i] === 0) blackPixelCount++;
         }
-        return blackPixelCount > 16;
+        return blackPixelCount > 4;
     }
   }
 
