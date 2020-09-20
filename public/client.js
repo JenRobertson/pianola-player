@@ -94,7 +94,7 @@ class CaptureArea {
         this.createSegments();
     }
     createSegments() {
-        for (let i = 1; i <= 88; i++) {
+        for (let i = 0; i < 88; i++) {
             this.segments.push(new Segment({
                 keyNumber: i,
                 frequency: getFrequencyFromPianoNumber(i),
