@@ -1,4 +1,4 @@
-let ctx, captureArea, servo, sampler;
+let ctx, captureArea, sampler;
 const INTERVAL = 5;
 const MIN_BLACK_PIXEL_COUNT = 4;
 const HEIGHT_OF_CAPTURE_AREA = 4;
@@ -6,9 +6,8 @@ const HEIGHT_OF_CAPTURE_AREA = 4;
 window.addEventListener('load', () => {
     setUpMotor();
     buttonAddCaptureArea.onclick = () => {
+        if (captureArea) captureArea.stop();
         captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
-        servo = new Servo({x: 0, y: parseInt(sliderY.value), width: 50, perfect: 10});
-        setInterval(interval1Sec, 1000);
     }
     sampler = new Tone.Sampler({
         urls: getUrls(),
@@ -20,10 +19,6 @@ window.addEventListener('load', () => {
     }).toDestination();
 });
 
-const interval1Sec = () => {
-    servo.check();
-    console.log(servo.offset);
-}
 
 function showWebcam() {
     const video = document.querySelector('video');
@@ -127,8 +122,15 @@ class Servo {
 
 class CaptureArea {
     constructor({calibrationNumbers, y}) {
+        this.servo = new Servo({x: 0, y, width: 50, perfect: 10});
+        
         this.calibrationNumbers = calibrationNumbers.split(' ');
-        if(this.calibrationNumbers.length < 89) alert('Please enter 89 numbers (one extra for with of 88th)');
+        if (this.calibrationNumbers.length < 89){
+            alert('Please enter 89 numbers (one extra for with of 88th)');
+            return;
+        } 
+        this.servoInterval = setInterval(this.checkServo.bind(this), 1000);
+
         this.y = y;
         this.segments= [];
         this.createSegments();
@@ -137,9 +139,13 @@ class CaptureArea {
         this.x = this.segments[0];
         this.endX = this.segments[88];
     }
+    stop() {
+        clearInterval(this.servoInterval)
+    }
     createSegments() {
         for (let i = 0; i < 88; i++) {
             this.segments.push(new Segment({
+                servo: this.servo,
                 keyNumber: i,
                 frequency: getFrequencyFromPianoNumber(i),
                 x: parseInt(this.calibrationNumbers[i]), 
@@ -163,10 +169,14 @@ class CaptureArea {
         ctx.closePath();
         ctx.stroke();
     }
+    checkServo() {
+        this.servo.check();
+    }
 }
 
 class Segment {
-    constructor({keyNumber, frequency, x, y, width}) {
+    constructor({servo, keyNumber, frequency, x, y, width}) {
+        this.servo = servo;
         this.keyNumber = keyNumber;
         this.frequency = frequency;
         this.originalX = x;
@@ -186,7 +196,7 @@ class Segment {
         this.playing = false;
     }
     check () {
-        this.x = this.originalX + servo.offset;
+        this.x = this.originalX + this.servo.offset;
         if (this.isBlack() !== this.playing) { // state has changed
             this.isBlack() ? this.startNote() : this.stopNote();
         }
