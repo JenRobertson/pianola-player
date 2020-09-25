@@ -1,12 +1,14 @@
-let ctx, captureArea, sampler;
+let ctx, captureArea, servo, sampler;
 const INTERVAL = 5;
 const MIN_BLACK_PIXEL_COUNT = 4;
-const HEIGHT_OF_CAPTURE_AREA = 1;
+const HEIGHT_OF_CAPTURE_AREA = 4;
 
 window.addEventListener('load', () => {
     setUpMotor();
     buttonAddCaptureArea.onclick = () => {
-        captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: sliderY.value});
+        captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
+        servo = new Servo({x: 0, y: parseInt(sliderY.value), width: 50, perfect: 10});
+        setInterval(interval1Sec, 1000);
     }
     sampler = new Tone.Sampler({
         urls: getUrls(),
@@ -18,6 +20,10 @@ window.addEventListener('load', () => {
     }).toDestination();
 });
 
+const interval1Sec = () => {
+    servo.check();
+    console.log(servo.offset);
+}
 
 function showWebcam() {
     const video = document.querySelector('video');
@@ -40,7 +46,7 @@ function showWebcam() {
     .catch(function (err) {
         /* handle the error */
     });
-    
+
     const interval = () => {
         if (checkboxFilters.checked) {
             ctx.filter = `brightness(${sliderBrightness.value}%) contrast(${sliderContrast.value}%) grayscale(${checkboxClamp.checked ? 1 : 0})`;
@@ -55,6 +61,7 @@ function showWebcam() {
             const starti = (640 * 4) * captureArea.y;
             const endi = starti + (640 * 4 * HEIGHT_OF_CAPTURE_AREA);
 
+            // make pixels black or white
             for (let i = starti; i < endi; i++) {
                 let element = pixels.data[i];
                 if (element < sliderClamp.value) {
@@ -68,7 +75,10 @@ function showWebcam() {
         ctx.putImageData(pixels, 0, 0);
         if(captureArea) {
             captureArea.draw();
-            if (checkboxSound.checked) captureArea.checkSegments();
+            // check segments
+            if (checkboxSound.checked){
+                captureArea.checkSegments();
+            }
         }
     }
 }
@@ -93,6 +103,28 @@ function setUpMotor() {
     }
 }
 
+class Servo {
+    constructor({x, y, width, perfect}) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.perfect = perfect;
+        this.offset = 0;
+    }
+    check() {
+        const pixels = ctx.getImageData(this.x, this.y, this.width, 1).data;
+        for (let i = 0; i < pixels.length; i+= 4) {
+            if (pixels[i] === 255) { // is white 
+                const edge = i / 4;
+                this.offset = edge - this.perfect;
+                return;
+            }
+        }
+        // It all seems to be black, give up!
+        this.offset = this.perfect;
+    }
+}
+
 class CaptureArea {
     constructor({calibrationNumbers, y}) {
         this.calibrationNumbers = calibrationNumbers.split(' ');
@@ -110,8 +142,8 @@ class CaptureArea {
             this.segments.push(new Segment({
                 keyNumber: i,
                 frequency: getFrequencyFromPianoNumber(i),
-                x: this.calibrationNumbers[i], 
-                width: this.calibrationNumbers[i + 1] - this.calibrationNumbers[i],
+                x: parseInt(this.calibrationNumbers[i]), 
+                width: parseInt(this.calibrationNumbers[i + 1]) - parseInt(this.calibrationNumbers[i]),
                 y: this.y
             }));
         };
@@ -137,10 +169,11 @@ class Segment {
     constructor({keyNumber, frequency, x, y, width}) {
         this.keyNumber = keyNumber;
         this.frequency = frequency;
+        this.originalX = x;
         this.x = x;
         this.y = y;
         this.width = width;
-        this.height = 4;
+        this.height = HEIGHT_OF_CAPTURE_AREA;
 
         this.playing = false;
     }
@@ -153,6 +186,7 @@ class Segment {
         this.playing = false;
     }
     check () {
+        this.x = this.originalX + servo.offset;
         if (this.isBlack() !== this.playing) { // state has changed
             this.isBlack() ? this.startNote() : this.stopNote();
         }
