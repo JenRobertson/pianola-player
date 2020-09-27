@@ -1,7 +1,7 @@
 let ctx, captureArea, sampler;
 const INTERVAL = 5;
-const MIN_BLACK_PIXEL_COUNT = 4;
-const HEIGHT_OF_CAPTURE_AREA = 4;
+const MIN_BLACK_PIXEL_COUNT = 0;
+const HEIGHT_OF_CAPTURE_AREA = 1;
 
 window.addEventListener('load', () => {
     setUpMotor();
@@ -69,11 +69,11 @@ function showWebcam() {
         
         ctx.putImageData(pixels, 0, 0);
         if(captureArea) {
-            captureArea.draw();
             // check segments
             if (checkboxSound.checked){
                 captureArea.checkSegments();
             }
+            captureArea.draw();
         }
     }
 }
