@@ -200,14 +200,14 @@ class Segment {
     }
     check () {
         this.x = this.originalX + this.servo.offset;
-        if (this.isBlack){
+        if (this.isBlack()){
             this.monoStable = 10; 
         } else {
             this.monoStable--;
         }
         
         if (this.monoStable > 0) {
-            this.startNote();
+            if (!this.playing) this.startNote();
         } else {
             this.stopNote();
         }
