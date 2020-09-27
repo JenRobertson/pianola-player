@@ -186,6 +186,9 @@ class Segment {
         this.height = HEIGHT_OF_CAPTURE_AREA;
 
         this.playing = false;
+        this.monoStable = 0;
+        // 10 cm p second, should be 50 ms
+        // needs to count to 10
     }
     startNote () {
         sampler.triggerAttack(this.frequency);
@@ -197,9 +200,20 @@ class Segment {
     }
     check () {
         this.x = this.originalX + this.servo.offset;
-        if (this.isBlack() !== this.playing) { // state has changed
-            this.isBlack() ? this.startNote() : this.stopNote();
+        if (this.isBlack){
+            this.monoStable = 10; 
+        } else {
+            this.monoStable--;
         }
+        
+        if (this.monoStable > 0) {
+            this.startNote();
+        } else {
+            this.stopNote();
+        }
+        // if (this.isBlack() !== this.playing) { // state has changed
+        //     this.isBlack() ? this.startNote() : this.stopNote();
+        // }
     }
     isBlack() {
         const pixels = ctx.getImageData(this.x, this.y, this.width, this.height).data;
