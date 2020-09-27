@@ -9,7 +9,8 @@ const Motor0 = new Gpio(4, 'out'); //use GPIO pin 4 as output
 const Motor1 = new Gpio(6, 'out'); //use GPIO pin 6 as output to make motor go
 
 http.listen(port, function(){
-  console.log('listening on *:' + port);
+    stop();
+    console.log('listening on *:' + port);
 });
 
 app.use(express.static('public'));
