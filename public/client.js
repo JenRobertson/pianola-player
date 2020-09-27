@@ -122,7 +122,7 @@ class Servo {
 
 class CaptureArea {
     constructor({calibrationNumbers, y}) {
-        this.servo = new Servo({x: 0, y, width: 50, perfect: 10});
+        this.servo = new Servo({x: 0, y, width: 50, perfect: 13});
         
         this.calibrationNumbers = calibrationNumbers.split(' ');
         if (this.calibrationNumbers.length < 89){
