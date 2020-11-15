@@ -1,8 +1,10 @@
 let ctx, captureArea, sampler;
-const INTERVAL = 5;
+const INTERVAL = 10;
 const MIN_BLACK_PIXEL_COUNT = 0;
-const HEIGHT_OF_CAPTURE_AREA = 1;
-
+const HEIGHT_OF_CAPTURE_AREA = 5;
+const PERFECT = 20;       //bigger moves capture boxes to the left
+const SERVOWIDTH = 100;   //previously 50
+const WIDTH = 1280;
 window.addEventListener('load', () => {
     setUpMotor();
     buttonAddCaptureArea.onclick = () => {
@@ -33,7 +35,7 @@ function showWebcam() {
     navigator.mediaDevices.getUserMedia({ audio: false, video: true })
     .then(function (stream) {
         video.srcObject = stream;
-        canvas.width = 640;
+        canvas.width = WIDTH;
         canvas.height = 480;
         setInterval(interval, INTERVAL);
         
@@ -53,8 +55,8 @@ function showWebcam() {
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         if (checkboxClamp.checked) {
             if(!captureArea) return;
-            const starti = (640 * 4) * captureArea.y;
-            const endi = starti + (640 * 4 * HEIGHT_OF_CAPTURE_AREA);
+            const starti = (WIDTH * 4) * captureArea.y;
+            const endi = starti + (WIDTH * 4 * HEIGHT_OF_CAPTURE_AREA);
 
             // make pixels black or white
             for (let i = starti; i < endi; i++) {
@@ -122,7 +124,7 @@ class Servo {
 
 class CaptureArea {
     constructor({calibrationNumbers, y}) {
-        this.servo = new Servo({x: 0, y, width: 50, perfect: 13});
+        this.servo = new Servo({x: 0, y, width: SERVOWIDTH, perfect: PERFECT});
         
         this.calibrationNumbers = calibrationNumbers.split(' ');
         if (this.calibrationNumbers.length < 89){

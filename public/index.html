@@ -11,20 +11,24 @@
     <video playsinline autoplay></video>
     <canvas></canvas>
 
-    <textarea id='calibrationNumbers'>54 60.97 65.93 71.9 77.86 83.83 89.8 95.76 101.73 107.69 113.66 119.63 125.59 131.56 137.52 143.19 149 155 161 167 173 179 185 191 197 203 209 215 221 227 233 239 245 251 256 262 268.5 274.5 280 286 292 298 304 309.5 316 322 328 334 339 345 351 357 363 369 375 381 387 393 399 405 411 417 423 429 435 441 447 453 459.5 465 471 477 483 490 496 502.44 508.41 514.37 520.34 526.31 532.27 538.24 544.2 550.17 556.14 562.1 568.07 574.5 581</textarea>
+   <!-- <textarea id='calibrationNumbers'>54 60.97 65.93 71.9 77.86 83.83 89.8 95.76 101.73 107.69 113.66 119.63 125.59 131.56 137.52 143.19 149 155 161 167 173 179 185 191 197 203 209 215 221 227 233 239 245 251 256 262 268.5 274.5 280 286 292 298 304 309.5 316 322 328 334 339 345 351 357 363 369 375 381 387 393 399 405 411 417 423 429 435 441 447 453 459.5 465 471 477 483 490 496 502.44 508.41 514.37 520.34 526.31 532.27 538.24 544.2 550.17 556.14 562.1 568.07 574.5 581</textarea> -->
 
+    <!-- <textarea id='calibrationNumbers'></textarea> -->
+    <!--    <textarea id='calibrationNumbers'>52 58 64 70 76 82 88 93 99 105 111 117 123 129 135 140 146 152 158 164 170 176 182 188 194 200 206 212 218 224 230 236 242 247 253 259 265 271 277 283 289 295 300 306 312 318 324 330 336 342 347 353 359 365 371 377 383 389 395 401 407 413 419 425 431 437 443 450 456 462 468 474 480 486 492 498 504 510 516 522 528 535 541 547 553 559 565 571 577</textarea> -->
+    <textarea id='calibrationNumbers'>104 116 128 139 151 163 175 187 199 210 222 234 246 257 269 281 293 305 317 329 341 353 365 377 389 401 412 424 436 448 460 472 484 496 508 519 531 543 555 567 579 591 602 614 626 637 649 661 673 685 697 708 720 732 744 756 768 780 792 805 817 829 841 853 865 877 890 902 914 926 938 951 963 975 987 999 1011 1024 1036 1048 1060 1073 1085 1097 1109 1121 1133 1146 1159</textarea>
+   
     <div id="Capture area controls">
       <!-- Left:<input type="number" min="0" max="640" value="55" id="sliderLeft"> -->
       <!-- Right:<input type="number" min="0" max="640" value="580" id="sliderRight"> -->
-      Y:<input type="number" min="0" max="300" value="300" id="sliderY">
+      Y:<input type="number" min="0" max="300" value="323" id="sliderY">
       <button id='buttonAddCaptureArea'>Add capture area</button>
     </div>
 
     <div id="divFilters">
       <h2>Filter controls</h2>
       Threshold:<input type="number" min="0" max="255" value="180" id="sliderClamp">
-      Brightness:<input type="number" min="-500" max="500" value="300" id="sliderBrightness">
-      Contrast:<input type="number" min="0" max="1000" value="100" id="sliderContrast">
+      Brightness:<input type="number" min="-500" max="500" value="150" id="sliderBrightness">
+      Contrast:<input type="number" min="0" max="1000" value="150" id="sliderContrast">
       Block colours:<input type="checkbox" id="checkboxClamp" checked>
       Enable filters:<input type="checkbox" id="checkboxFilters" checked>
     </div>
