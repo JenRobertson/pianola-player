@@ -1,12 +1,13 @@
 let ctx, captureArea, sampler;
+const WIDTH = 640;
 const INTERVAL = 10;
 const MIN_BLACK_PIXEL_COUNT = 0;
 const HEIGHT_OF_CAPTURE_AREA = 5;
-const PERFECT = 20;       //bigger moves capture boxes to the left
-const SERVOWIDTH = 100;   //previously 50
-const WIDTH = 1280;
+const PERFECT = 12 * WIDTH/640;       //bigger moves capture boxes to the left
+const SERVOWIDTH = 50 * WIDTH/640;    //previously 50
+
 window.addEventListener('load', () => {
-    setUpMotor();
+    setUpMotor();   
     buttonAddCaptureArea.onclick = () => {
         if (captureArea) captureArea.stop();
         captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
@@ -124,7 +125,7 @@ class Servo {
 
 class CaptureArea {
     constructor({calibrationNumbers, y}) {
-        this.servo = new Servo({x: 0, y, width: SERVOWIDTH, perfect: PERFECT});
+        this.servo = new Servo({x: 0, y, width: SERVOWIDTH, perfect: (PERFECT - (document.getElementById("alignCapture").value))});  //PERFECT
         
         this.calibrationNumbers = calibrationNumbers.split(' ');
         if (this.calibrationNumbers.length < 89){
