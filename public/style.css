@@ -62,3 +62,11 @@ body {
   background: #4CAF50;
   cursor: pointer;
 }
+
+textarea.y {
+  visibility: visible;
+}
+
+textarea.n {
+  visibility: hidden;
+}

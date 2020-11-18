@@ -5,13 +5,24 @@ const MIN_BLACK_PIXEL_COUNT = 0;
 const HEIGHT_OF_CAPTURE_AREA = 5;
 const PERFECT = 12 * WIDTH/640;       //bigger moves capture boxes to the left
 const SERVOWIDTH = 50 * WIDTH/640;    //previously 50
-
+let calibrationNumbers = "";
 window.addEventListener('load', () => {
-    setUpMotor();   
+    setUpMotor();
+    
+    if (WIDTH==640) 
+        {calibrationNumbers = document.getElementById("calibrationNumbers640")}
+    if (WIDTH==1280) 
+        {calibrationNumbers = document.getElementById("calibrationNumbers1280")}
+        
+        
     buttonAddCaptureArea.onclick = () => {
         if (captureArea) captureArea.stop();
-        captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
+        
+        
+                    
+    captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
     }
+    
     sampler = new Tone.Sampler({
         urls: getUrls(),
         baseUrl: "audio/piano/",
