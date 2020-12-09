@@ -18,8 +18,9 @@
  
  
     <br>
-    <input type="range" min="-2" max="2" value="0" id="alignCapture">
-    &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
+    <input type="range" min="-5" max="5" value="0" id="alignCapture"> 
+  <!--  <input type="range" min="-5" max="5" value="0" id="alignCapture" oninput="showCaptureArea()">
+   <!-- &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
     &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
     <button id='recalibrate'>Calibrate Capture Area</button>
     <br>
@@ -32,14 +33,14 @@
         
   
       <!-- Right:<input type="number" min="0" max="640" value="580" id="sliderRight"> -->
-      Y:<input type="number" min="0" max="300" value="323" id="sliderY">
+      Y:<input type="number" min="0" max="300" value="320" id="sliderY">
       <button id='buttonAddCaptureArea'>Add capture area</button>
     </div>
 
     <div id="divFilters">
       <h2>Filter controls</h2>
       Threshold:<input type="number" min="0" max="255" value="180" id="sliderClamp">
-      Brightness:<input type="number" min="-500" max="500" value="150" id="sliderBrightness">
+      Brightness:<input type="number" min="-500" max="500" value="200" id="sliderBrightness">
       Contrast:<input type="number" min="0" max="1000" value="150" id="sliderContrast">
       Block colours:<input type="checkbox" id="checkboxClamp" checked>
       Enable filters:<input type="checkbox" id="checkboxFilters" checked>

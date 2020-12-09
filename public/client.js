@@ -1,22 +1,15 @@
 let ctx, captureArea, sampler;
-const WIDTH = 640;
+const WIDTH = 1280;
+const HEIGHT = 480;
 const INTERVAL = 10;
 const MIN_BLACK_PIXEL_COUNT = 0;
 const HEIGHT_OF_CAPTURE_AREA = 5;     //height in pixels of Calibration Detect area
-
-const PERFECT = 12 * WIDTH/640;       //bigger moves capture boxes to the left
+const PERFECT = 22 * WIDTH/640;       //bigger moves capture boxes to the left
 const SERVOWIDTH = 50 * WIDTH/640;    //previously 50
 let calibrationNumbers = document.getElementById("calibrationNumbers");
-//var element = document.getElementById("calibrationNumbers");
-
 const SCALE = WIDTH/640;
-//const Y = 305;                       //yposition for the Calibration Detect area
-
-//const video = document.querySelector('video');
-//const canvas = document.querySelector('canvas');
-//const ctx = canvas.getContext('2d');
+const Y = 340;                       //yposition for the Calibration Detect area
 let calibrationArray = [0,1,2,3,4,5,6,7,8,9];
-//let calibrationNumbers = "";
 
 
 
@@ -31,12 +24,12 @@ window.addEventListener('load', () => {
     if (WIDTH==1280) 
         {calibrationNumbers = document.getElementById("calibrationNumbers1280")}
         
-        
-    buttonAddCaptureArea.onclick = () => {
+    buttonAddCaptureArea.onclick = () => {showCaptureArea();}
+            
+    function showCaptureArea() {        
         if (captureArea) captureArea.stop();
-        
+     calibrateCaptureArea();   
     let calibrationNumbers = document.getElementById("calibrationNumbers");    
-   // let calibrationNumbers = "";                
     captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
     }
     
@@ -65,7 +58,7 @@ function showWebcam() {
     .then(function (stream) {
         video.srcObject = stream;
         canvas.width = WIDTH;
-        canvas.height = 480;
+        canvas.height = HEIGHT;
         setInterval(interval, INTERVAL);
         
     })
@@ -348,55 +341,16 @@ function getUrls() {
 }
 
 //..............................................
+ // recalibrate.onclick = () => {       // clicking mouse on calibrate button instigates the calibration
+ //       calibrateCaptureArea();
 
-//https://github.com/webrtc/samples/blob/gh-pages/src/content/getusermedia/canvas/js/main.js
-
-//const WIDTH = 640;
-//const SCALE = WIDTH/640;
-//const Y = 305;         //yposition for the Calibration Detect area
-//const HEIGHT_OF_CAPTURE_AREA = 7;     //height in pixels of Calibration Detact area
-//const video = document.querySelector('video');
-//const canvas = document.querySelector('canvas');
-//const ctx = canvas.getContext('2d');
-//let calibrationArray = [0,1,2,3,4,5,6,7,8,9];
-//let calibrationNumbers = "";
-//let Y = parseInt(sliderY.value);
-
-//window.onload = function () {
-   
-
-//    navigator.mediaDevices.getUserMedia({audio: false, video: true})
-//        .then(function(stream) {
-//            video.srcObject = stream;
-//            canvas.width = WIDTH;
-//            canvas.height = 480;
- //           setInterval(interval, 30);
-
-//        })
-//        .catch(function(err) {
-//        /* handle the error */
-//        alert ("you need to allow the webcam!")
-//        });
-        
-//    const interval = () => 
-//      {ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-//       ctx.beginPath();
-//       ctx.moveTo(0, Y-1);
-//       ctx.lineTo(WIDTH, Y-1);
-//       ctx.stroke();   }
-//}  //end of the window.onload function
-  
-  recalibrate.onclick = () => {       // clicking mouse on calibrate button instigates the calibration
-        calibrateCaptureArea();
-
-    }
+  //  }
 
 // this is the camera position calibration function
 function calibrateCaptureArea() {
     let calibrationNumbers = "";                  //delete old calibration
     let ix,iy,b,blue,finalNumber,finalNumberString;
-   // let Y = parseInt(sliderY.value);
-   let Y = 340;
+
     for (ix = 0; ix < WIDTH; ix++) {              //ix to scan across the video window    
         blue = 0
         
@@ -414,7 +368,7 @@ function calibrateCaptureArea() {
     
     //calculate a threshold value to distinguish dark from light
         let threshold = 0;
-    for (ix = 100 * SCALE; ix<499 * SCALE; ix++) {                       //going to calculate a brightness threshold for white and black
+    for (ix = 30 * SCALE; ix<499 * SCALE; ix++) {                       //going to calculate a brightness threshold for white and black
         threshold = threshold + calibrationArray[ix];    //add up lots of values
     }  
         threshold = parseInt(threshold/SCALE/400);     //and take the average
@@ -423,7 +377,7 @@ function calibrateCaptureArea() {
         //1 represents bright and 0 represents dark
     for (ix = 0; ix<WIDTH; ix++) {
         if (calibrationArray[ix] >= threshold) 
-        {calibrationArray[ix] = 1;}
+        {calibrationArray[ix] = 1;}              
         else
         {calibrationArray[ix] = 0;}
     }  //end of ix loop
@@ -431,7 +385,7 @@ function calibrateCaptureArea() {
         //this is it: Lets generate some calibration numbers
   var lastfound = 0;            
   var previouslyfound = 0;
-  for (ix = 30 * SCALE ; ix<638 * SCALE; ix++) 
+  for (ix = 30 * SCALE ; ix<610 * SCALE; ix++) 
      {      
      var   ixstring = ix.toString();
      var thispixel = calibrationArray[ix];
@@ -444,9 +398,9 @@ function calibrateCaptureArea() {
        calibrationNumbers = calibrationNumbers.concat(" ");
        previouslyfound = lastfound;
        lastfound = ix;
-       }   // end of inner if
+       }  // end of inner if
       }   //end of outer if
-       }  //end of for loop
+     }    //end of for loop
        
        //so now we have to add one more number to the end to make 89 numbers
        // decided to just add the same distance as for the previous note
