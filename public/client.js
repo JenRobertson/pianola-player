@@ -10,8 +10,9 @@ let calibrationNumbers = document.getElementById("calibrationNumbers");
 const SCALE = WIDTH/640;
 const Y = 340;                       //yposition for the Calibration Detect area
 let calibrationArray = [0,1,2,3,4,5,6,7,8,9];
-
-
+let ccc=0;
+let calibrationNumbersArray = [0,1,2,3,4,5,6,7,8,9];
+let centralValue = 0;
 
 
 
@@ -350,6 +351,10 @@ function getUrls() {
 function calibrateCaptureArea() {
     let calibrationNumbers = "";                  //delete old calibration
     let ix,iy,b,blue,finalNumber,finalNumberString;
+    //let calibrationNumbersArray = [0,1,2,3,4,5,6,7,8,9];
+    let arrayIndex = 0;
+    let centralValue = 0;
+    let ccc=0;
 
     for (ix = 0; ix < WIDTH; ix++) {              //ix to scan across the video window    
         blue = 0
@@ -383,19 +388,24 @@ function calibrateCaptureArea() {
     }  //end of ix loop
         
         //this is it: Lets generate some calibration numbers
-  var lastfound = 0;            
-  var previouslyfound = 0;
+  let lastfound = 0;            
+  let previouslyfound = 0;
+  
   for (ix = 30 * SCALE ; ix<610 * SCALE; ix++) 
      {      
-     var   ixstring = ix.toString();
-     var thispixel = calibrationArray[ix];
-     var nextpixel = calibrationArray[ix+1];
+     let   ixstring = ix.toString();
+     let thispixel = calibrationArray[ix];
+     let nextpixel = calibrationArray[ix+1];
       if (thispixel == 1) 
       {
       if (nextpixel == 0)
        {
-       calibrationNumbers = calibrationNumbers.concat(ixstring);
-       calibrationNumbers = calibrationNumbers.concat(" ");
+       arrayIndex = arrayIndex + 1;
+       calibrationNumbersArray[arrayIndex] = ix;
+       
+//1       calibrationNumbers = calibrationNumbers.concat(ixstring);
+//1       calibrationNumbers = calibrationNumbers.concat(" ");
+       //console.log(arrayIndex,calibrationNumbersArray[arrayIndex]);
        previouslyfound = lastfound;
        lastfound = ix;
        }  // end of inner if
@@ -404,9 +414,33 @@ function calibrateCaptureArea() {
        
        //so now we have to add one more number to the end to make 89 numbers
        // decided to just add the same distance as for the previous note
-       finalNumber = lastfound * 2 - previouslyfound; //calculate what the last number needs to be
-       finalNumberString = finalNumber.toString();    //convert it to a string
-       calibrationNumbers = calibrationNumbers.concat(finalNumberString); //and add it to the end of the calibrationNumbers
+       //terrible Kluge - I should just draw another line on the calibration strip
+       
+       finalNumber = lastfound * 2 - previouslyfound;                      //calculate what the last number needs to be
+       arrayIndex = arrayIndex + 1;
+       calibrationNumbersArray[arrayIndex] = finalNumber;
+       
+       //perform stretch or shrink of calibration scale
+       //let shrinkValue = document.getElementById("stretchShrink");   //this will be a number from -5 to +5
+       let xyz = document.getElementById("stretchShrink").value;
+       console.log ("xyz", xyz);
+       let shrinkValue = xyz;
+       shrinkValue = 1 + shrinkValue * 0.001                          //shrinkValue now in range  0.99 to 1.01          
+       centralValue = parseInt(calibrationNumbersArray[45]);                   //this is a capture area in the centre of the screen
+       //console.log("centralValue",centralValue,calibrationNumbersArray[45],calibrationNumbersArray[centralValue]);
+       
+       for (ix = 1  ; ix<90; ix++) 
+        {                
+        calibrationNumbersArray[ix]= centralValue-((centralValue - calibrationNumbersArray[ix])*shrinkValue);
+      //  calibrationNumbersArray[ix] = ccc;
+       // console.log(ix,calibrationNumbersArray[ix],shrinkValue);
+        calibrationNumbers = calibrationNumbers + calibrationNumbersArray[ix].toString() + " ";
+      //  calibrationNumbers = calibrationNumbers.concat(ixstring);
+      //  calibrationNumbers = calibrationNumbers.concat(" ");
+        }
+    
+    
+    
     
       let element = document.getElementById("calibrationNumbers");
       element.innerHTML = calibrationNumbers;
