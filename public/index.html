@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Pianola Player</title>
+    <title>Pianola Player with autocalibrate</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -10,21 +10,29 @@
 
     <video playsinline autoplay></video>
     <canvas></canvas>
-
-    <textarea id='calibrationNumbers'>54 60.97 65.93 71.9 77.86 83.83 89.8 95.76 101.73 107.69 113.66 119.63 125.59 131.56 137.52 143.19 149 155 161 167 173 179 185 191 197 203 209 215 221 227 233 239 245 251 256 262 268.5 274.5 280 286 292 298 304 309.5 316 322 328 334 339 345 351 357 363 369 375 381 387 393 399 405 411 417 423 429 435 441 447 453 459.5 465 471 477 483 490 496 502.44 508.41 514.37 520.34 526.31 532.27 538.24 544.2 550.17 556.14 562.1 568.07 574.5 581</textarea>
-
-    <div id="Capture area controls">
-      <!-- Left:<input type="number" min="0" max="640" value="55" id="sliderLeft"> -->
-      <!-- Right:<input type="number" min="0" max="640" value="580" id="sliderRight"> -->
-      Y:<input type="number" min="0" max="300" value="300" id="sliderY">
-      <button id='buttonAddCaptureArea'>Add capture area</button>
-    </div>
+    
+ <!-- The following calibration is original manual calibration for 640 pixel canvas -->
+  <textarea id='calibrationNumbers'>54 60.97 65.93 71.9 77.86 83.83 89.8 95.76 101.73 107.69 113.66 119.63 125.59 131.56 137.52 143.19 149 155 161 167 173 179 185 191 197 203 209 215 221 227 233 239 245 251 256 262 268.5 274.5 280 286 292 298 304 309.5 316 322 328 334 339 345 351 357 363 369 375 381 387 393 399 405 411 417 423 429 435 441 447 453 459.5 465 471 477 483 490 496 502.44 508.41 514.37 520.34 526.31 532.27 538.24 544.2 550.17 556.14 562.1 568.07 574.5 581</textarea> 
+  
+ 
+ 
+ 
+    <br>
+    <input type="range" min="-5" max="5" value="0" id="alignCapture"> 
+    &nbsp
+    <input type="range" min="-10" max="10" value="0" id="stretchShrink"> 
+    &nbsp &nbsp
+     Y:<input type="number" min="0" max="300" value="320" id="sliderY">
+     <button id='buttonAddCaptureArea'>Add capture area</button>
+     <br>
+   <p>  Capture Area Offset &nbsp &nbsp  Capture Area Stretch</p>
+   <!-- </div> -->
 
     <div id="divFilters">
       <h2>Filter controls</h2>
       Threshold:<input type="number" min="0" max="255" value="180" id="sliderClamp">
-      Brightness:<input type="number" min="-500" max="500" value="300" id="sliderBrightness">
-      Contrast:<input type="number" min="0" max="1000" value="100" id="sliderContrast">
+      Brightness:<input type="number" min="-500" max="500" value="200" id="sliderBrightness">
+      Contrast:<input type="number" min="0" max="1000" value="150" id="sliderContrast">
       Block colours:<input type="checkbox" id="checkboxClamp" checked>
       Enable filters:<input type="checkbox" id="checkboxFilters" checked>
     </div>
@@ -38,7 +46,7 @@
       <button id='piano'>Ding</button>
       Sound:<input type="checkbox" checked id="checkboxSound">
     </div>
-
+ 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.52/Tone.js"></script>
     <script type="module" src="client.js"></script>

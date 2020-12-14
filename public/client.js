@@ -1,14 +1,39 @@
 let ctx, captureArea, sampler;
-const INTERVAL = 5;
+const WIDTH = 1280;
+const HEIGHT = 480;
+const INTERVAL = 10;
 const MIN_BLACK_PIXEL_COUNT = 0;
-const HEIGHT_OF_CAPTURE_AREA = 1;
+const HEIGHT_OF_CAPTURE_AREA = 5;     //height in pixels of Calibration Detect area
+const PERFECT = 22 * WIDTH/640;       //bigger moves capture boxes to the left
+const SERVOWIDTH = 50 * WIDTH/640;    //previously 50
+let calibrationNumbers = document.getElementById("calibrationNumbers");
+const SCALE = WIDTH/640;
+const Y = 340;                       //yposition for the Calibration Detect area
+let calibrationArray = [0,1,2,3,4,5,6,7,8,9];
+let ccc=0;
+let calibrationNumbersArray = [0,1,2,3,4,5,6,7,8,9];
+let centralValue = 0;
+
+
+
 
 window.addEventListener('load', () => {
     setUpMotor();
-    buttonAddCaptureArea.onclick = () => {
+    
+    if (WIDTH==640) 
+        {calibrationNumbers = document.getElementById("calibrationNumbers640")}
+    if (WIDTH==1280) 
+        {calibrationNumbers = document.getElementById("calibrationNumbers1280")}
+        
+    buttonAddCaptureArea.onclick = () => {showCaptureArea();}
+            
+    function showCaptureArea() {        
         if (captureArea) captureArea.stop();
-        captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
+     calibrateCaptureArea();   
+    let calibrationNumbers = document.getElementById("calibrationNumbers");    
+    captureArea = new CaptureArea({calibrationNumbers: calibrationNumbers.value, y: parseInt(sliderY.value)});
     }
+    
     sampler = new Tone.Sampler({
         urls: getUrls(),
         baseUrl: "audio/piano/",
@@ -33,8 +58,8 @@ function showWebcam() {
     navigator.mediaDevices.getUserMedia({ audio: false, video: true })
     .then(function (stream) {
         video.srcObject = stream;
-        canvas.width = 640;
-        canvas.height = 480;
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
         setInterval(interval, INTERVAL);
         
     })
@@ -53,8 +78,8 @@ function showWebcam() {
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
         if (checkboxClamp.checked) {
             if(!captureArea) return;
-            const starti = (640 * 4) * captureArea.y;
-            const endi = starti + (640 * 4 * HEIGHT_OF_CAPTURE_AREA);
+            const starti = (WIDTH * 4) * captureArea.y;
+            const endi = starti + (WIDTH * 4 * HEIGHT_OF_CAPTURE_AREA);
 
             // make pixels black or white
             for (let i = starti; i < endi; i++) {
@@ -122,7 +147,7 @@ class Servo {
 
 class CaptureArea {
     constructor({calibrationNumbers, y}) {
-        this.servo = new Servo({x: 0, y, width: 50, perfect: 13});
+        this.servo = new Servo({x: 0, y, width: SERVOWIDTH, perfect: (PERFECT - (document.getElementById("alignCapture").value))});  //PERFECT
         
         this.calibrationNumbers = calibrationNumbers.split(' ');
         if (this.calibrationNumbers.length < 89){
@@ -315,3 +340,113 @@ function getUrls() {
         'G#6': "Gs6.mp3",
     }
 }
+
+//..............................................
+ // recalibrate.onclick = () => {       // clicking mouse on calibrate button instigates the calibration
+ //       calibrateCaptureArea();
+
+  //  }
+
+// this is the camera position calibration function
+function calibrateCaptureArea() {
+    let calibrationNumbers = "";                  //delete old calibration
+    let ix,iy,b,blue,finalNumber,finalNumberString;
+    //let calibrationNumbersArray = [0,1,2,3,4,5,6,7,8,9];
+    let arrayIndex = 0;
+    let centralValue = 0;
+    let ccc=0;
+
+    for (ix = 0; ix < WIDTH; ix++) {              //ix to scan across the video window    
+        blue = 0
+        
+        for (iy = Y; iy < Y+HEIGHT_OF_CAPTURE_AREA; iy++) {       //for each ix we will measure blue value at several iy
+          let imgData = ctx.getImageData(ix,iy,1,1); //read a single pixel to a four number array
+          b=imgData.data[1];                         //blue is the second value of the array [1]
+          blue = blue + b;                           //add up all the blue values of each iy
+         // btx.putImageData(imgData, ix, iy-Y);
+         }   //end of iy loop
+       
+        blue = parseInt(blue/HEIGHT_OF_CAPTURE_AREA);             //take average value of blue for this ix
+        calibrationArray[ix] = blue;               //and put it in an array
+       
+    }  //end of ix loop
+    
+    //calculate a threshold value to distinguish dark from light
+        let threshold = 0;
+    for (ix = 30 * SCALE; ix<499 * SCALE; ix++) {                       //going to calculate a brightness threshold for white and black
+        threshold = threshold + calibrationArray[ix];    //add up lots of values
+    }  
+        threshold = parseInt(threshold/SCALE/400);     //and take the average
+        //alert (threshold)      
+        //going to convert all the blue values to ones or zeros
+        //1 represents bright and 0 represents dark
+    for (ix = 0; ix<WIDTH; ix++) {
+        if (calibrationArray[ix] >= threshold) 
+        {calibrationArray[ix] = 1;}              
+        else
+        {calibrationArray[ix] = 0;}
+    }  //end of ix loop
+        
+        //this is it: Lets generate some calibration numbers
+  let lastfound = 0;            
+  let previouslyfound = 0;
+  
+  for (ix = 30 * SCALE ; ix<610 * SCALE; ix++) 
+     {      
+     let   ixstring = ix.toString();
+     let thispixel = calibrationArray[ix];
+     let nextpixel = calibrationArray[ix+1];
+      if (thispixel == 1) 
+      {
+      if (nextpixel == 0)
+       {
+       arrayIndex = arrayIndex + 1;
+       calibrationNumbersArray[arrayIndex] = ix;
+       
+//1       calibrationNumbers = calibrationNumbers.concat(ixstring);
+//1       calibrationNumbers = calibrationNumbers.concat(" ");
+       //console.log(arrayIndex,calibrationNumbersArray[arrayIndex]);
+       previouslyfound = lastfound;
+       lastfound = ix;
+       }  // end of inner if
+      }   //end of outer if
+     }    //end of for loop
+       
+       //so now we have to add one more number to the end to make 89 numbers
+       // decided to just add the same distance as for the previous note
+       //terrible Kluge - I should just draw another line on the calibration strip
+       
+       finalNumber = lastfound * 2 - previouslyfound;                      //calculate what the last number needs to be
+       arrayIndex = arrayIndex + 1;
+       calibrationNumbersArray[arrayIndex] = finalNumber;
+       
+       //perform stretch or shrink of calibration scale
+       //let shrinkValue = document.getElementById("stretchShrink");   //this will be a number from -5 to +5
+       let xyz = document.getElementById("stretchShrink").value;
+       console.log ("xyz", xyz);
+       let shrinkValue = xyz;
+       shrinkValue = 1 + shrinkValue * 0.001                          //shrinkValue now in range  0.99 to 1.01          
+       centralValue = parseInt(calibrationNumbersArray[45]);                   //this is a capture area in the centre of the screen
+       //console.log("centralValue",centralValue,calibrationNumbersArray[45],calibrationNumbersArray[centralValue]);
+       
+       for (ix = 1  ; ix<90; ix++) 
+        {                
+        calibrationNumbersArray[ix]= centralValue-((centralValue - calibrationNumbersArray[ix])*shrinkValue);
+      //  calibrationNumbersArray[ix] = ccc;
+       // console.log(ix,calibrationNumbersArray[ix],shrinkValue);
+        calibrationNumbers = calibrationNumbers + calibrationNumbersArray[ix].toString() + " ";
+      //  calibrationNumbers = calibrationNumbers.concat(ixstring);
+      //  calibrationNumbers = calibrationNumbers.concat(" ");
+        }
+    
+    
+    
+    
+      let element = document.getElementById("calibrationNumbers");
+      element.innerHTML = calibrationNumbers;
+
+    
+      
+        
+}  //end of calibrateCaptureArea function
+
