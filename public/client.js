@@ -1,10 +1,10 @@
 let ctx, captureArea, sampler;
-const WIDTH = 1280;
+const WIDTH = 640;
 const HEIGHT = 480;
 const INTERVAL = 10;
 const MIN_BLACK_PIXEL_COUNT = 0;
 const HEIGHT_OF_CAPTURE_AREA = 5;     //height in pixels of Calibration Detect area
-const PERFECT = 22 * WIDTH/640;       //bigger moves capture boxes to the left
+const PERFECT = 15 * WIDTH/640;       //bigger moves capture boxes to the left
 const SERVOWIDTH = 50 * WIDTH/640;    //previously 50
 let calibrationNumbers = document.getElementById("calibrationNumbers");
 const SCALE = WIDTH/640;
