@@ -1,5 +1,5 @@
 let ctx, captureArea, sampler;
-const WIDTH = 640;
+const WIDTH = 1280;
 const HEIGHT = 480;
 const INTERVAL = 10;
 const MIN_BLACK_PIXEL_COUNT = 0;
@@ -83,19 +83,17 @@ function showWebcam() {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        if (checkboxClamp.checked) {
-            if(!captureArea) return;
-            const starti = (WIDTH * 4) * captureArea.y;
-            const endi = starti + (WIDTH * 4 * HEIGHT_OF_CAPTURE_AREA);
-            
-            // make pixels black or white
-            for (let i = starti; i < endi; i++) {
-                let element = pixels.data[i];
-                if (element < sliderClamp.value) {
-                    pixels.data[i] = 0;
-                } else {
-                    pixels.data[i] = 255;
-                }
+        if(!captureArea) return;
+        const starti = (WIDTH * 4) * captureArea.y;
+        const endi = starti + (WIDTH * 4 * HEIGHT_OF_CAPTURE_AREA);
+        
+        // make pixels black or white
+        for (let i = starti; i < endi; i++) {
+            let element = pixels.data[i];
+            if (element < sliderClamp.value) {
+                pixels.data[i] = 0;
+            } else {
+                pixels.data[i] = 255;
             }
         }
         
@@ -234,8 +232,9 @@ class Segment {
     isBlack() {
         const pixels = ctx.getImageData(this.x, this.y, this.width, this.height).data;
         let blackPixelCount = 0;
-        for (let i = 0; i < pixels.length; i++) {
+        for (let i = 0; i < pixels.length; i+=4) {
             if (pixels[i] === 0) blackPixelCount++;
+            if (blackPixelCount > MIN_BLACK_PIXEL_COUNT) return true;
         }
         return blackPixelCount > MIN_BLACK_PIXEL_COUNT;
     }
