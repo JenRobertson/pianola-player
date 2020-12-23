@@ -2,25 +2,41 @@
     color: blue;
 } */
 
+@font-face {
+  font-family: fancy;
+  src: url(images/AguafinaScript-Regular.ttf);
+}
+
 video {
     display: none;
 }
 
+h1, h2 {
+  display: none;
+}
+
 canvas {
+  z-index: 1;
     display: block;
+    background-color: black;
+    width: 640px;
+    height: 480px;
+    position: absolute;
+    left: 200px;
+    top: 20px;
 }
 
 body {
-    background-color: #c7a3af;
+    background-color: #1e2606;
+    font-family: fancy;
+    padding: 0;
+    margin: 0;
 }
 
-#divMotor {
-    background-color: grey;
+div {
+  z-index: 3;
 }
 
-#divFilters {
-    background-color: green;
-}
 
 /* textArea {
     top: 300px;
@@ -32,36 +48,6 @@ body {
   width: 100%;
 }
 
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 25px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-.slider:hover {
-  opacity: 1;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #4CAF50;
-  cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #4CAF50;
-  cursor: pointer;
-}
 
 textarea.y {
   visibility: visible;
@@ -69,4 +55,190 @@ textarea.y {
 
 textarea.n {
   visibility: hidden;
+}
+
+/* knobs */
+
+
+.main-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+#top-panel {
+  z-index: 3;
+  position: absolute;
+  width: 415px;
+  height: 200px;
+  left: 354px;
+  top: 16px;
+  font-size: 40px;
+
+}
+
+#top-panel span {
+  display: inline-block;
+  width: 93px;
+
+}
+
+container {
+  position: relative;
+  width: 1020px;
+  height: 769px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+#divMotor button {
+  top: 154px;
+}
+
+.round-button {
+  cursor: pointer;
+  background-image: url('./images/button.png');
+  height: 115px;
+  width: 115px;
+  background-color: #0000ff00;
+  border: none;
+  background-size: contain;
+  font-family: fancy;
+  z-index: 3;
+  position: absolute;
+  font-size: 36px;
+}
+.round-button:hover {
+  background-image: url('./images/button-hover.png');
+}
+
+#stop {
+  right: 0px;
+}
+
+#show-panel {
+  cursor: pointer;
+  background-image: url('./images/handle.png');
+  height: 55px;
+  width: 177px;
+  background-color: #0000ff00;
+  border: none;
+  background-size: contain;
+  z-index: 3;
+  position: absolute;
+  right: 0px;
+  bottom: 300px;
+  transform-origin: 147px 27px;
+  transition: transform 2s;
+}
+
+#bottom-panel {
+  background-image: url('./images/bottom-panel.png');
+  z-index: 4;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 169px;
+  transition: bottom 2s;
+}
+
+.panel2 {
+  background-image: url('./images/panel2.png');
+  width: 279px;
+  height: 127px;
+  font-size: 27px;
+  box-sizing: border-box;
+}
+
+#ypanel {
+  position: absolute;
+  right: 188px;
+  bottom: 20px;
+  padding-left: 35px;
+  padding-top: 8px;
+}
+
+#filters {
+  position: absolute;
+  left: 200px;
+  bottom: 20px;
+  padding-left: 35px;
+  padding-top: 8px;
+
+}
+
+#reverse {
+  left: 24px;
+  bottom: 26px;
+}
+
+.panel2 span {
+  width: 100px;
+  display: inline-block;
+}
+
+.panel2 input {
+  width: 50px;
+  height: 24px;
+  display: inline-block;
+  font-family: fancy;
+  font-size: 20px;
+  vertical-align: text-top;
+  background-color: #f0e1b6;
+}
+
+.panel2 textarea {
+  width: 200px;
+  height: 57px;
+  display: inline-block;
+  font-family: fancy;
+  font-size: 20px;
+  vertical-align: text-top;
+  background-color: #f0e1b6;
+}
+
+button {
+  outline: none;
+  border: none;
+}
+
+.round-button--small {
+  font-size: 15px;
+  height: 40px;
+  width: 40px;
+  top: 39px;
+}
+/* slider */
+
+.slide-container {
+  width: 194px;
+  display: inline-block;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #382a2a;
+  outline: none;
+}
+
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  border: 0;
+    border-radius: 50%;
+  background-image: url('./images/button.png');
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  cursor: pointer;
 }

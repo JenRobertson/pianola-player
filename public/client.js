@@ -13,11 +13,21 @@ let calibrationArray = [0,1,2,3,4,5,6,7,8,9];
 let ccc=0;
 let calibrationNumbersArray = [0,1,2,3,4,5,6,7,8,9];
 let centralValue = 0;
-
-
-
+let bottomOpen = false;
 
 window.addEventListener('load', () => {
+
+    document.getElementById('show-panel').onclick = () => { 
+        if (bottomOpen) {
+            document.getElementById('bottom-panel').style = 'bottom: -170px;';
+            document.getElementById('show-panel').style = 'transform: rotate(0deg)';
+            bottomOpen = false;
+        } else {
+            document.getElementById('bottom-panel').style = 'bottom: 0px;';
+            document.getElementById('show-panel').style = 'transform: rotate(90deg)';
+            bottomOpen = true;
+        }
+    }
     setUpMotor();
     
     if (WIDTH==640) {
@@ -53,8 +63,8 @@ function showWebcam() {
     const sliderClamp = document.querySelector('#sliderClamp');
     const sliderBrightness = document.querySelector('#sliderBrightness');
     const sliderContrast = document.querySelector('#sliderContrast');
-    const checkboxClamp = document.querySelector('#checkboxClamp');
-    const checkboxFilters = document.querySelector('#checkboxFilters');
+    // const checkboxClamp = document.querySelector('#checkboxClamp');
+    // const checkboxFilters = document.querySelector('#checkboxFilters');
     
     navigator.mediaDevices.getUserMedia({ audio: false, video: true })
     .then(function (stream) {
@@ -69,11 +79,7 @@ function showWebcam() {
     });
     
     const interval = () => {
-        if (checkboxFilters.checked) {
-            ctx.filter = `brightness(${sliderBrightness.value}%) contrast(${sliderContrast.value}%) grayscale(${checkboxClamp.checked ? 1 : 0})`;
-        } else {
-            ctx.filter = 'none';
-        }
+        ctx.filter = `brightness(${sliderBrightness.value}%) contrast(${sliderContrast.value}%) grayscale(1)`;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
         const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -96,9 +102,7 @@ function showWebcam() {
         ctx.putImageData(pixels, 0, 0);
         if(captureArea) {
             // check segments
-            if (checkboxSound.checked){
-                captureArea.checkSegments();
-            }
+            captureArea.checkSegments();
             captureArea.draw();
         }
     }
